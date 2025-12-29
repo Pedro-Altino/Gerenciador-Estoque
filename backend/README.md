@@ -50,6 +50,9 @@ python -m pytest -q
 
 ### Testes implementados
 
+> Observação: os testes criam automaticamente um banco SQLite temporário para a sessão de testes e executam a criação das tabelas (`backend/tests/conftest.py`). Isso evita interferência com `backend/database.db` e garante isolamento entre execuções.
+
+
 - **test_create_and_get_product** — cria um produto via `POST /products` e valida `GET /products/{id}` (campos `id`, `name`, `quantity`).
 - **test_update_and_delete_product** — atualiza com `PUT /products/{id}` e valida que `DELETE /products/{id}` remove o produto (seguido por `GET` retornando 404).
 - **test_list_products** — garante que `GET /products` retorna uma lista de produtos e contém os produtos criados.
