@@ -109,15 +109,16 @@ def atualizar_produto(*, product_id: int, product: ProductUpdate, session=Depend
 
 @produtos_router.delete("/{product_id}", status_code=204)
 def deletar_produto(*, product_id: int, session=Depends(get_session)):
-    """Deleta um produto."""
+    """Deleta um produto e suas movimentações associadas."""
     product = session.get(Product, product_id)
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
+    # Delete associated movements first (Cascading Delete)
     statement = select(Movement).where(Movement.product_id == product_id)
-    results = session.exec(statement)
-    if results.first():
-         raise HTTPException(status_code=400, detail="Não é possível deletar o produto pois existem movimentações associadas a ele.")
+    movements = session.exec(statement).all()
+    for movement in movements:
+        session.delete(movement)
 
     session.delete(product)
     session.commit()
